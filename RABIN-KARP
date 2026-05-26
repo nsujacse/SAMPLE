@@ -1,0 +1,59 @@
+import time
+
+def rabin_karp(text, pattern, d=256, q=101):
+    # d = number of characters in input alphabet
+    # q = a prime number
+
+    n = len(text)
+    m = len(pattern)
+
+    h = pow(d, m - 1) % q   # value of d^(m-1)
+
+    p = 0   # hash value for pattern
+    t = 0   # hash value for text
+
+    result = []
+
+    # Preprocessing:
+    # Calculate hash value for pattern and first window of text
+    for i in range(m):
+        p = (d * p + ord(pattern[i])) % q
+        t = (d * t + ord(text[i])) % q
+
+    # Slide the pattern over text one by one
+    for s in range(n - m + 1):
+
+        # Check hash values
+        if p == t:
+
+            # Check characters one by one
+            # (spurious hits are possible)
+            if text[s:s + m] == pattern:
+                result.append(s)
+
+        # Calculate hash value for next window
+        if s < n - m:
+            t = (d * (t - ord(text[s]) * h) + ord(text[s + m])) % q
+
+            # Convert negative value to positive
+            if t < 0:
+                t += q
+
+    return result
+
+
+# Main Program
+text = input("Enter the text: ")
+pattern = input("Enter the pattern: ")
+
+stime = time.time()
+
+time.sleep(1)   # optional delay
+
+positions = rabin_karp(text, pattern)
+
+etime = time.time()
+
+print("Pattern found at positions:", positions)
+
+print("Execution Time:", etime - stime - 1, "seconds")
